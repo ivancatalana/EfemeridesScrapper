@@ -16,7 +16,7 @@ public class ScrapperEfemerides {
     WebDriver driver = new FirefoxDriver(options);
     String baseUrl = "";
     List<WebElement> tagNameElementsP;
-
+//Creamos la lista de webelements ??
     List <List<WebElement>> webElementsList;
 
 
@@ -26,61 +26,69 @@ public class ScrapperEfemerides {
     public void getElementsP() {
 
         for (int i = 1; i <= 2; i++) {
-            for (int j = 1; j <= 2; j++) {
+            for (int j = 1; j <= 1; j++) {
 
 
                 baseUrl = "https://www.efemerides20.com/" + j + "-de-"+mesDelAño(i);
                 driver.get(baseUrl);
 
                 tagNameElementsP = new LinkedList<>(driver.findElements((By.tagName("p"))));
-
-                getNacimiento();
-                getAcontecimiento();
-                for (WebElement n : tagNameElementsP) {
+                System.out.println("Tamaño elementos P: "+tagNameElementsP.size());
+                 getNacimiento();
+               // getAcontecimiento();
+    /*            for (WebElement n : tagNameElementsP) {
                     System.out.println(n.getText());
 
                 }
-
+     */
 
             }
         }
     }
     //Función que devuelve los acontecimientos dentro de un dia
     public void getAcontecimiento(){
-        Pattern yearAcontecimiento = Pattern.compile("(?<= de )([\\s\\S]\\d*?)(?= nace )");
-        Pattern descripcionAcontecimiento = Pattern.compile("(?<=en )([\\s\\S]*?)(?=\\.)");
-        List<WebElement> acontecimientoList = new LinkedList<>();
+
+//Patron para extraer el año
+        Pattern yearAcontecimiento = Pattern.compile("(?<= de )([\\s\\S]\\d*?)(?= )");
+
 
         for (WebElement n : tagNameElementsP) {
 
 
-            if (!n.getText().contains("nace") || !n.getText().contains("muere")) {
+            if (!n.getText().contains("nace") && !n.getText().contains("muere")) {
                 Matcher yearAcontecimientoM = yearAcontecimiento.matcher(n.getText());
-                Matcher descripcionAcontecimientoM = descripcionAcontecimiento.matcher(n.getText());
+    //            Matcher descripcionAcontecimientoM = descripcionAcontecimiento.matcher(n.getText());
                 if (yearAcontecimientoM.find()) {
 
                     try {
 
 
                         String year = "" + yearAcontecimientoM.group(0);
-                      //  String[] yearSplit = year.split(" de ");
-                       // for (String s : yearSplit){
-                       //     System.out.println(s);
+                        String[] yearSplit = n.getText().split("(\\d+)\\s(?!de)");
+ /*
+                        for (String s : yearSplit){
+                            System.out.println(s);
+                        }
 
 
-                        System.out.println(year);
+  */
+                        System.out.println("Acontecimiento "+year);
+
+                        System.out.println("Acontecimiento con descripcion:  "+yearSplit[1]);
 
                     } catch (NumberFormatException e) {
 
-                    }
+                      }
                 }
             }
         }
 
-    }    //Función que devuelve los Nacimientos dentro de un dia
+    }
+
+    //Función que devuelve los Nacimientos dentro de un dia
     public void getNacimiento(){
         Pattern yearNacimiento = Pattern.compile("(?<= de )([\\s\\S]\\d*?)(?= nace )");
-        Pattern descripcionAcontecimiento = Pattern.compile("(?<=en )([\\s\\S]*?)(?=\\.)");
+        Pattern EnteNacimiento = Pattern.compile("(?<=nace )([\\s\\S].*?)(?=,)");
         List<WebElement> acontecimientoList = new LinkedList<>();
 
         for (WebElement n : tagNameElementsP) {
@@ -88,21 +96,22 @@ public class ScrapperEfemerides {
 
             if (n.getText().contains("nace")) {
                 Matcher yearNacimientoM = yearNacimiento.matcher(n.getText());
-                Matcher descripcionAcontecimientoM = descripcionAcontecimiento.matcher(n.getText());
+                Matcher enteNacimientoM = EnteNacimiento.matcher(n.getText());
                 if (yearNacimientoM.find()) {
 
                     try {
-/*
 
-                        String year = "" + yearAcontecimientoM.group(0);
-                        String[] yearSplit = year.split(" de ");
+
+                        String year = "" + yearNacimientoM.group(0);
+                        String[] yearSplit = n.getText().split("(\\d+)\\s(?!de)");
                         for (String s : yearSplit){
                             System.out.println(s);
 
                         }
+                        if (enteNacimientoM.find())   System.out.println(enteNacimientoM.group(0));
 
- */
-                           System.out.println(yearNacimientoM.group(0));
+
+                        System.out.println("Nacimiento del año "+yearNacimientoM.group(0));
 
                     } catch (NumberFormatException e) {
 
