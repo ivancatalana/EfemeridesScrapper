@@ -34,7 +34,8 @@ public class ScrapperEfemerides {
 
                 tagNameElementsP = new LinkedList<>(driver.findElements((By.tagName("p"))));
                 System.out.println("Tamaño elementos P: "+tagNameElementsP.size());
-                 getNacimiento();
+           //      getNacimiento();
+                 getDefunciones(j,i);
                // getAcontecimiento();
     /*            for (WebElement n : tagNameElementsP) {
                     System.out.println(n.getText());
@@ -125,9 +126,54 @@ public class ScrapperEfemerides {
 
 
     //Función que devuelve las defunciones dentro de un dia
-    public void getDefunciones(String linea){
+    public void getDefunciones(int dia,int mes){
+        int diaD=dia;
+        int mesD= mes;
+
+        Pattern yearDefuncion = Pattern.compile("(?<= de )([\\s\\S]\\d*?)(?= muere )");
+        Pattern enteDefuncion = Pattern.compile("(?<=muere )([\\s\\S].*?)(?=,)");
+
+        List<WebElement> acontecimientoList = new LinkedList<>();
+
+        for (WebElement n : tagNameElementsP) {
 
 
+            if (n.getText().contains("muere")) {
+                Matcher yearDefuncionM = yearDefuncion.matcher(n.getText());
+                Matcher enteDefuncionM = enteDefuncion.matcher(n.getText());
+                if (yearDefuncionM.find()) {
+
+                    try {
+
+
+                        String year = "" + yearDefuncionM.group(0);
+                        String[] yearSplit = n.getText().split("(\\d+)\\s(?!de)");
+
+                       /*
+                        for (String s : yearSplit){
+                            System.out.println(s);
+
+                        }
+
+                        */
+                        if (enteDefuncionM.find()) {
+                            System.out.println(enteDefuncionM.group(0));
+
+                            String[]description=n.getText().split("(?<=muere )([\\s\\S].*?)(?<=, )");
+                            String[]nacimiento=n.getText().split("(?<=\\( )([\\s\\S]*?)(?<=\\) )");
+
+
+                            System.out.println("Dia: " + dia + " , mes: " + mesDelAño(mes) + " , año: " +
+                                    yearDefuncionM.group(0) + " , persona: " + enteDefuncionM.group(0) +
+                                    " , descripcion: " + description[1]+" , nacimiento "+
+                                    n.getText());
+                        }
+                    } catch (NumberFormatException e) {
+
+                    }
+                }
+            }
+        }
     }
 
     // Funcion que nos devuelve el mes para completar el webdriver
