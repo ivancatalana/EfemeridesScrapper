@@ -1,6 +1,7 @@
 package org.example;
 
 public class Nacimiento {
+
     private int yearNacim;
     private int yearMuerte;
     private String nombre;

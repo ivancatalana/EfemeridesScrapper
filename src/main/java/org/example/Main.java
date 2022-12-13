@@ -5,5 +5,7 @@ public class Main {
           ScrapperEfemerides se = new ScrapperEfemerides();
           se.getElementsP();
           se.driver.quit();
+        System.out.println( se.nacimientoList.size());
+
     }
 }
