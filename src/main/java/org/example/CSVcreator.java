@@ -8,12 +8,26 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
+/**
+
+ * Esta clase define metodos que conectarán con la web efemerides.com para extraer la información
+
+ * @author: Ivan Morales Mirete
+
+ * @version: 13/12/2022/A
+
+ */
+
 public class CSVcreator {
 
-    public CSVcreator(){
+    /**
 
-    }
+     * Método que escribe el número de ítems acontecimiento en el fichero Acontecimientos.csv
 
+     * @param acontecimiento  los elementos a escribir
+
+     */
     public void escribirArchivoAcontecimiento(String [] acontecimiento){
 
         File file= new File("src/Acontecimientos.csv");
@@ -36,6 +50,13 @@ public class CSVcreator {
         }
 
     }
+    /**
+
+     * Método que escribe el número de ítems nacimiento en el fichero Acontecimientos.csv
+
+     * @param nacimiento  los elementos a escribir
+
+     */
     public void escribirArchivoNacimiento(String [] nacimiento) {
 
         File file = new File("src/Nacimientos.csv");
@@ -59,7 +80,13 @@ public class CSVcreator {
             }
         }
     }
+    /**
 
+     * Método que escribe el número de valores de los ítems defunciones en el fichero Acontecimientos.csv
+
+     * @param defuncion  los elementos a escribir
+
+     */
     public void escribirArchivoDefunciones(String [] defuncion) {
 
         File file = new File("src/Defunciones.csv");

@@ -5,8 +5,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.xml.sax.SAXException;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -42,7 +44,11 @@ public class ScrapperEfemerides {
 
     //Instanciamos nuestro creador de CSV
     CSVcreator csVcreator = new CSVcreator();
+    XMLcreator xmLcreator = new XMLcreator();
     int contadorDias=0;
+
+            public ScrapperEfemerides() throws IOException, SAXException {
+            }
 
             /**
 
@@ -56,8 +62,8 @@ public class ScrapperEfemerides {
     //Funcion que nos encuentra todos los elementos p de la página
     public void getElementsP() {
 
-        for (int i = 4; i <= 12; i++) {
-            for (int j = 19; j <= 31; j++) {
+        for (int i = 1; i <= 12; i++) {
+            for (int j = 1; j <= 1; j++) {
 
 
                 baseUrl = "https://www.efemerides20.com/" + j + "-de-"+mesDelAño(i);
@@ -75,12 +81,21 @@ public class ScrapperEfemerides {
 
     }
 
+            /**
+
+             * Funcion que devuelve los acontecimientos dentro de un dia
+
+             * @param dia  el dia del año
+             * @param mes  el mes del año
+
+             */
     //Función que devuelve los acontecimientos dentro de un dia
     public void getAcontecimiento(int dia , int mes){
 
                 //Creamos Acontecimiento para escribir CSV
 
         Acontecimiento acontecimiento = new Acontecimiento(0,LocalDate.now(),"");
+
                //Patron para extraer el año
         Pattern yearAcontecimiento = Pattern.compile("(?<= de )([\\s\\S]\\d*?)(?= )");
 
@@ -90,7 +105,6 @@ public class ScrapperEfemerides {
 
             if (!n.getText().contains("nace") && !n.getText().contains("muere")) {
                 Matcher yearAcontecimientoM = yearAcontecimiento.matcher(n.getText());
-    //            Matcher descripcionAcontecimientoM = descripcionAcontecimiento.matcher(n.getText());
                 if (yearAcontecimientoM.find()) {
 
                     try {
@@ -102,15 +116,13 @@ public class ScrapperEfemerides {
                         String stringFecha = ""+year+"-"+mes+"-"+dia;
                         Date fecha= sdf.parse(stringFecha);
                         LocalDate fechaSinHora= LocalDate.parse(sdf.format(fecha));
-                        //acontecimiento.setYear(Integer.parseInt(year));
-                    //    System.out.println(fechaSinHora);
 
-                      //  System.out.println("Acontecimiento "+year);
                         try {
                             if (yearSplit.length!=0) {
                                 String[] acontecimientoString = {stringFecha, year, yearSplit[1]};
 
                                 csVcreator.escribirArchivoAcontecimiento(acontecimientoString);
+                                xmLcreator.escribirArchivoAcontecimiento(acontecimientoString);
                             }
                             } catch (ArrayIndexOutOfBoundsException e)   {
                             System.out.println("Error out of bounds en Acontecimieno del " +stringFecha);
@@ -127,7 +139,14 @@ public class ScrapperEfemerides {
         }
 
     }
+            /**
 
+             * Funcion que devuelve los Nacimientos de un dia
+
+             * @param dia  el dia del año
+             * @param mes  el mes del año
+
+             */
     //Función que devuelve los Nacimientos dentro de un dia
     public void getNacimiento(int dia, int mes){
         int diaD=dia;
@@ -167,7 +186,7 @@ public class ScrapperEfemerides {
                                             enteNacimientoM.group(0) , descriptionClean };
                                     csVcreator.escribirArchivoNacimiento(nacimientoString);
                                     nacimientoList.add(new Nacimiento(Integer.parseInt(yearNacimientoM.group(0)),Integer.parseInt(yearDefuncion),enteNacimientoM.group(0),descriptionClean));
-
+                                    xmLcreator.escribirArchivoNacimiento(nacimientoString);
                                 }
 
                             } catch (ArrayIndexOutOfBoundsException e)   {
@@ -184,7 +203,9 @@ public class ScrapperEfemerides {
                                         enteNacimientoM.group(0) , descriptionClean };
                                 csVcreator.escribirArchivoNacimiento(nacimientoString);
                                 nacimientoList.add(new Nacimiento(Integer.parseInt(yearNacimientoM.group(0)),Integer.parseInt(yearDefuncion),enteNacimientoM.group(0),descriptionClean));
-                                }
+                                xmLcreator.escribirArchivoNacimiento(nacimientoString);
+
+                            }
                         }
                     } catch (NumberFormatException e) {
 
@@ -193,7 +214,14 @@ public class ScrapperEfemerides {
             }
         }
     }
+            /**
 
+             * Funcion que devuelve las defunciones dentro de un dia
+
+             * @param dia  el dia del año
+             * @param mes  el mes del año
+
+             */
 
     //Función que devuelve las defunciones dentro de un dia
     public void getDefunciones(int dia,int mes){
@@ -238,17 +266,22 @@ public class ScrapperEfemerides {
                                 String [] defuncionString= {year+"-"+mes+ "-"+dia ,
                                         year, yearNacimiento.replaceAll("[^A-Z0-9]", ""),
                                         enteDefuncionM.group(0) , descriptionClean };
+
                                 csVcreator.escribirArchivoDefunciones(defuncionString);
+                                xmLcreator.escribirArchivoDefuncion(defuncionString);
+
                                 defuncionList.add(new Defuncion(Integer.parseInt(yearDefuncionM.group(0)),
                                         yearNacimientoInt, enteDefuncionM.group(0),n.getText())) ;
 
 
                             }
                              else {
-                                                                 String [] defuncionString= {year+"-"+mes+ "-"+dia ,
-                                                                        year, "-1" ,enteDefuncionM.group(0) , n.getText() };
-                                                                 csVcreator.escribirArchivoDefunciones(defuncionString);
-                                                                 defuncionList.add(new Defuncion(Integer.parseInt(yearDefuncionM.group(0)),-1,enteDefuncionM.group(0),n.getText()));
+                                 String [] defuncionString= {year+"-"+mes+ "-"+dia ,
+                                         year, "-1" ,enteDefuncionM.group(0) , n.getText() };
+                                 csVcreator.escribirArchivoDefunciones(defuncionString);
+                                xmLcreator.escribirArchivoDefuncion(defuncionString);
+
+                                defuncionList.add(new Defuncion(Integer.parseInt(yearDefuncionM.group(0)),-1,enteDefuncionM.group(0),n.getText()));
 
                                     }
 
@@ -262,7 +295,13 @@ public class ScrapperEfemerides {
             }
         }
     }
+            /**
 
+             * Funcion que devuelveel mes en letras
+
+             * @param j  el mes del año
+
+             */
     // Funcion que nos devuelve el mes para completar el webdriver
     public String mesDelAño(int j){
         String mes1="enero";
