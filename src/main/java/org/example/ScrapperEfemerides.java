@@ -63,7 +63,7 @@ public class ScrapperEfemerides {
     public void getElementsP() {
 
         for (int i = 1; i <= 12; i++) {
-            for (int j = 1; j <= 1; j++) {
+            for (int j = 1; j <= 31; j++) {
 
 
                 baseUrl = "https://www.efemerides20.com/" + j + "-de-"+mesDelAño(i);
@@ -197,13 +197,19 @@ public class ScrapperEfemerides {
                             }
                             else{
                                 yearDefuncion = "-1";
-                                descriptionClean = description[1];
-                                String [] nacimientoString= {year+"-"+mes+ " - "+dia ,
-                                        year, "-1",
-                                        enteNacimientoM.group(0) , descriptionClean };
-                                csVcreator.escribirArchivoNacimiento(nacimientoString);
-                                nacimientoList.add(new Nacimiento(Integer.parseInt(yearNacimientoM.group(0)),Integer.parseInt(yearDefuncion),enteNacimientoM.group(0),descriptionClean));
-                                xmLcreator.escribirArchivoNacimiento(nacimientoString);
+                                try {
+
+
+                                    descriptionClean = description[1];
+                                    String[] nacimientoString = {year + "-" + mes + " - " + dia,
+                                            year, "-1",
+                                            enteNacimientoM.group(0), descriptionClean};
+                                    csVcreator.escribirArchivoNacimiento(nacimientoString);
+                                    nacimientoList.add(new Nacimiento(Integer.parseInt(yearNacimientoM.group(0)), Integer.parseInt(yearDefuncion), enteNacimientoM.group(0), descriptionClean));
+                                    xmLcreator.escribirArchivoNacimiento(nacimientoString);
+                                }catch (ArrayIndexOutOfBoundsException e){
+                                    System.out.println(descriptionClean);
+                                }
 
                             }
                         }
